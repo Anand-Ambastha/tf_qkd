@@ -19,20 +19,73 @@ multiple phases.
 
 Implemented:
 
-* Core notebook structure
-* Binary entropy functions
-* Basic channel transmittance models
-* Gain/yield-related helper functions
-* Initial validation and sanity checks
+- Binary entropy functions
+- Channel transmittance utilities
+- Optical loss modeling
+- X-basis gain calculations
+- Z-basis yield calculations
+- Dark-count modeling
+- Polarisation mismatch modeling
+- Phase mismatch handling
+- Numerical stability guards
+- Physical sanity checks
 
 #### Phase 2 — Cat States and Phase Error Estimation
 
 Implemented:
 
-* Cat-state related equations
-* Phase-error estimation framework
-* Numerical truncation handling
-* Stability checks for probability calculations
+- Cat-state decomposition framework
+- Even/odd photon-parity separation
+- Phase-error upper-bound estimation
+- Eq. (20) / Eq. (21) implementation
+- Photon-number truncation framework
+- Infinite-decoy yield estimation
+- Numerical truncation diagnostics
+
+#### Phase 3 — Secret Key Rate and Numerical Analysis
+
+Implemented:
+
+- Full asymptotic secret-key-rate pipeline
+- Eq. (17–19) implementation
+- PLOB repeaterless bound
+- Alpha-parameter optimization
+- Key-rate vs loss analysis
+- Dark-count sensitivity studies
+- Photon truncation convergence analysis
+- Numerical robustness diagnostics
+- Figure-generation framework
+
+Current numerical studies include:
+
+- secret key rate vs channel loss
+- dark-count sensitivity
+- phase mismatch sensitivity
+- polarization mismatch sensitivity
+- photon-number truncation convergence
+- comparison against the PLOB bound
+- alpha optimization behavior
+
+---
+
+## Current Numerical Characteristics
+
+The implementation currently uses:
+
+- asymptotic infinite-decoy assumptions
+- explicit photon-number truncation
+- nested combinatorial summations
+- direct numerical evaluation of Eq. (35)-type expressions
+- scalar/grid-based alpha optimization
+
+The simulator is computationally expensive for:
+
+- large truncation parameters
+- dense parameter sweeps
+- high-loss asymptotic studies
+
+Current optimization and convergence studies are therefore performed
+with moderate truncation limits and configurable fast-analysis modes.
 
 ---
 
@@ -40,10 +93,8 @@ Implemented:
 
 The next stages involve:
 
-* Secret key rate optimization
 * Reproduction of paper-level plots
 * Finite-decoy linear programming methods
-* Robustness analysis under realistic impairments
 
 Future extensions may also include:
 
