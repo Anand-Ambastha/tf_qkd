@@ -258,21 +258,11 @@ Prepared states:
 ## X Basis States
 
 $$
-|X_0\rangle
-===========
-
-\sqrt{q}|0\rangle
-+
-\sqrt{1-q}|1\rangle
+|X_0\rangle = [\sqrt{q}|0\rangle + \sqrt{1-q}|1\rangle]
 $$
 
 $$
-|X_1\rangle
-===========
-
-## \sqrt{q}|0\rangle
-
-\sqrt{1-q}|1\rangle
+|X_1\rangle = [ \sqrt{q}|0\rangle + \sqrt{1-q}|1\rangle]
 $$
 
 ## Z Basis States
