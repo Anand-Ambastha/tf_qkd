@@ -61,9 +61,8 @@ notebooks/
 │
 ├── Phase1_Foundation_and_Channel_Model.ipynb
 ├── Phase2_CatStates_and_PhaseError.ipynb
-├── Phase3_KeyRate_Optimization.ipynb
+├── Phase3_KeyRate_Optimization_Robustness_Studies.ipynb
 ├── Phase4_Finite_Decoy_LP.ipynb
-└── Phase5_Robustness_Studies.ipynb
 ```
 
 ---
@@ -103,8 +102,9 @@ Primary references:
 
 ## Author
 
-**Anand Kumar**
-B.Tech Electronics and Communication Engineering (2024–2028)
+**Anand Kumar** ,
+
+B.Tech Electronics and Communication Engineering (2024–2028),
 Guru Gobind Singh Indraprastha University (GGSIPU), New Delhi
 
 Research Interests:
