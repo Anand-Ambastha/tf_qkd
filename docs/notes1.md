@@ -587,10 +587,7 @@ $$
 ## Key Rate Equation
 
 $$
-R_X
-===
-
-2r$$1-h(e_X)-h(e_Z)$$
+R_X = 2r \left[1 - h(e_X) - h(e_Z)\right]
 $$
 
 ---
