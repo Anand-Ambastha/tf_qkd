@@ -17,15 +17,15 @@ Main contribution:
 * Uses local phase randomization
 * Achieves square-root scaling:
 
-[
+$$
 R \propto \sqrt{\eta}
-]
+$$
 
 instead of conventional:
 
-[
+$$
 R \propto \eta
-]
+$$
 
 where:
 
@@ -58,9 +58,9 @@ Conventional QKD suffers from exponential loss in optical fibers.
 
 For standard repeaterless QKD:
 
-[
+$$
 R \propto \eta
-]
+$$
 
 Meaning key rate decreases linearly with channel transmittance.
 
@@ -72,9 +72,9 @@ TF-QKD changes this scaling using:
 
 Result:
 
-[
+$$
 R \propto \sqrt{\eta}
-]
+$$
 
 This is the major breakthrough.
 
@@ -117,14 +117,14 @@ The paper first introduces an ideal entanglement-based protocol.
 
 Alice prepares:
 
-[
+$$
 |\phi_q\rangle_{Aa}
 ===================
 
 \sqrt{q}|0\rangle_A|0\rangle_a
 +
 \sqrt{1-q}|1\rangle_A|1\rangle_a
-]
+$$
 
 Bob prepares similar state.
 
@@ -185,9 +185,9 @@ Removing it improves practicality significantly.
 
 The paper derives probabilities:
 
-[
+$$
 r = r_1 + r_2
-]
+$$
 
 where:
 
@@ -204,21 +204,21 @@ Two important error rates:
 
 ## Bit Error Rate
 
-[
+$$
 e_X
-]
+$$
 
 ## Phase Error Rate
 
-[
+$$
 e_Z
-]
+$$
 
 The paper derives:
 
-[
+$$
 2e_X = e_Z
-]
+$$
 
 This relation becomes central to the security proof.
 
@@ -228,12 +228,12 @@ This relation becomes central to the security proof.
 
 The asymptotic secret key rate:
 
-[
+$$
 R_X
 ===
 
-2r[1-h(e_X)-h(e_Z)]
-]
+2r$$1-h(e_X)-h(e_Z)$$
+$$
 
 where:
 
@@ -257,33 +257,33 @@ Prepared states:
 
 ## X Basis States
 
-[
+$$
 |X_0\rangle
 ===========
 
 \sqrt{q}|0\rangle
 +
 \sqrt{1-q}|1\rangle
-]
+$$
 
-[
+$$
 |X_1\rangle
 ===========
 
 ## \sqrt{q}|0\rangle
 
 \sqrt{1-q}|1\rangle
-]
+$$
 
 ## Z Basis States
 
-[
+$$
 |Z_0\rangle = |0\rangle
-]
+$$
 
-[
+$$
 |Z_1\rangle = |1\rangle
-]
+$$
 
 ---
 
@@ -314,15 +314,15 @@ Uses:
 
 Key generation states:
 
-[
+$$
 |\alpha\rangle
-]
+$$
 
 and
 
-[
+$$
 |-\alpha\rangle
-]
+$$
 
 These are coherent states.
 
@@ -344,15 +344,15 @@ This enables decoy-state analysis.
 
 The paper uses the idea that phase-randomized coherent states can be represented as mixtures of number states:
 
-[
+$$
 P_\lambda(n)=\frac{e^{-\lambda}\lambda^n}{n!}
-]
+$$
 
 This allows Alice and Bob to estimate:
 
-[
+$$
 p_{ZZ}(k_c,k_d|n_A,n_B)
-]
+$$
 
 Meaning:
 
@@ -366,15 +366,15 @@ This is essential for security.
 
 The paper introduces cat states:
 
-[
+$$
 |C_0\rangle
-]
+$$
 
 and
 
-[
+$$
 |C_1\rangle
-]
+$$
 
 These states are used for:
 
@@ -389,9 +389,9 @@ This part is actually pretty nice mathematically.
 
 Upper bound on phase error:
 
-[
+$$
 e_Z \le e_Z^{upp}
-]
+$$
 
 This equation is one of the core results of the paper.
 
@@ -570,36 +570,36 @@ Long-distance operation remains vulnerable to:
 
 ## Scaling
 
-[
+$$
 R \propto \sqrt{\eta}
-]
+$$
 
 ---
 
 ## Conventional QKD Scaling
 
-[
+$$
 R \propto \eta
-]
+$$
 
 ---
 
 ## Key Rate Equation
 
-[
+$$
 R_X
 ===
 
-2r[1-h(e_X)-h(e_Z)]
-]
+2r$$1-h(e_X)-h(e_Z)$$
+$$
 
 ---
 
 ## Phase Error Bound
 
-[
+$$
 e_Z \le e_Z^{upp}
-]
+$$
 
 ---
 
