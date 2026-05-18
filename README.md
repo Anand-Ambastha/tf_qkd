@@ -1,5 +1,5 @@
-````md
-# Anand Kumar — TF-QKD / FSO Quantum Communication Research Framework
+
+# TF-QKD / FSO Quantum Communication Research Framework
 
 <p align="center">
   <img src="https://img.shields.io/badge/Quantum-Communication-purple?style=for-the-badge">
