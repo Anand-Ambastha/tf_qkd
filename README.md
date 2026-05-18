@@ -391,7 +391,7 @@ Satellite Quantum Communication • Atmospheric Channels
 
 ## Anand Kumar
 
-B.Tech — Electronics and Communication Engineering (2024–2028)
+B.Tech - Electronics and Communication Engineering (Batch'28),
 Guru Gobind Singh Indraprastha University (GGSIPU), New Delhi
 
 Research Interests:
