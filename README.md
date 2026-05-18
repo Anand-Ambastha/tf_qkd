@@ -404,5 +404,7 @@ Research Interests:
 * Quantum Networks
 
 Email: [anandambastha72@gmail.com](mailto:anandambastha72@gmail.com)
+
 GitHub: https://github.com/Anand-Ambastha
+
 LinkedIn: https://www.linkedin.com/in/anand-kumar05
