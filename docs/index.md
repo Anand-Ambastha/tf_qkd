@@ -1,42 +1,21 @@
-*# TF-QKD / FSO Quantum Communication Framework*
+# TF-QKD / FSO Quantum Communication Framework
 
+This repository contains:
 
+- Twin-Field QKD implementation
+- FSO channel modelling
+- Security proof studies
+- Literature review
+- Simulation notebooks
 
-*This repository contains:*
+## Research Notes
 
+Explore implementation notes and derivations.
 
+## Literature
 
-*- Twin-Field QKD implementation*
+Reference papers and survey material.
 
-*- FSO channel modelling*
+## Notebooks
 
-*- Security proof studies*
-
-*- Literature review*
-
-*- Simulation notebooks*
-
-
-
-*## Research Notes*
-
-
-
-*Explore implementation notes and derivations.*
-
-
-
-*## Literature*
-
-
-
-*Reference papers and survey material.*
-
-
-
-*## Notebooks*
-
-
-
-*Phase-wise implementation notebooks are available in the repository.*
-
+Phase-wise implementation notebooks are available in the repository.

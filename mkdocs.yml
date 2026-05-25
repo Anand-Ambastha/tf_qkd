@@ -12,7 +12,7 @@ theme:
     - search.suggest
     - content.code.copy
 
-repo_url: https://github.com/Anand-Ambastha/tf_qkd
+repo_url: https://github.com/Anand-Ambastha/tf_qkd/
 repo_name: GitHub Repository
 
 nav:
