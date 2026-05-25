@@ -1,0 +1,29 @@
+site_name: TF-QKD / FSO Quantum Communication Framework
+site_description: Research implementation of Twin-Field Quantum Key Distribution
+
+theme:
+  name: material
+
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+repo_url: https://github.com/Anand-Ambastha/tf_qkd
+repo_name: GitHub Repository
+
+nav:
+  - Home: index.md
+
+  - Research Notes:
+      - Notes 1: notes1.md
+      - Notes 2: notes2.md
+
+  - Literature:
+      - Paper Summaries: paper_summaries.md
+
+  - Implementation:
+      - Notebooks: notebooks.md
