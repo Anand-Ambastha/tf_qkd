@@ -4,7 +4,7 @@
 
 Reference paper introducing the simplified security-proof formulation.
 
-[Open PDF](papers\2018_Simple security proof of twin-field.pdf)
+[Open PDF](papers/2018_Simple%20security%20proof%20of%20twin-field.pdf)
 
 ---
 
