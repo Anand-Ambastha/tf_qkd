@@ -4,7 +4,7 @@
 
 Reference paper introducing the simplified security-proof formulation.
 
-[Open PDF](papers/2018_Simple%20security%20proof%20of%20twin-field.pdf)
+[Open PDF](papers/tfqkd_security_proof_2018.pdf)
 
 ---
 
@@ -12,7 +12,7 @@ Reference paper introducing the simplified security-proof formulation.
 
 Atmospheric turbulence and free-space optical channel effects.
 
-[Open PDF](papers\fso_channel_modelling.pdf)
+[Open PDF](papers/fso_channel_modelling.pdf)
 
 ---
 
@@ -20,4 +20,4 @@ Atmospheric turbulence and free-space optical channel effects.
 
 Collection of survey papers and reading recommendations.
 
-[Open PDF](papers/survey_paper.pdf)
+[Open PDF](papers/survey_paper_recommendations.pdf)
