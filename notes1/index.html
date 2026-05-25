@@ -1,0 +1,1204 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Research implementation of Twin-Field Quantum Key Distribution">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../notes2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Notes 1 - TF-QKD / FSO Quantum Communication Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#simple-security-proof-of-twin-field-type-quantum-key-distribution-protocol" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TF-QKD / FSO Quantum Communication Framework" class="md-header__button md-logo" aria-label="TF-QKD / FSO Quantum Communication Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TF-QKD / FSO Quantum Communication Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Notes 1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Anand-Ambastha/tf_qkd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub Repository
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Research Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../paper_summaries/" class="md-tabs__link">
+          
+  
+  
+  Literature
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../notebooks/" class="md-tabs__link">
+          
+  
+  
+  Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TF-QKD / FSO Quantum Communication Framework" class="md-nav__button md-logo" aria-label="TF-QKD / FSO Quantum Communication Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TF-QKD / FSO Quantum Communication Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Anand-Ambastha/tf_qkd" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub Repository
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notes2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Literature
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Literature
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paper_summaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Paper Summaries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notebooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="simple-security-proof-of-twin-field-type-quantum-key-distribution-protocol">Simple Security Proof of Twin-Field Type Quantum Key Distribution Protocol</h1>
+<p><strong>Authors:</strong> Marcos Curty, Koji Azuma, Hoi-Kwong Lo
+<strong>Year:</strong> 2018
+<strong>Author of Notes:</strong> Anand Ambastha</p>
+<hr />
+<h1 id="paper-information">Paper Information</h1>
+<p>This paper is one of the foundational theoretical works in Twin-Field Quantum Key Distribution (TF-QKD).</p>
+<p>Main contribution:</p>
+<ul>
+<li>Simplified security proof for TF-QKD</li>
+<li>Removes global phase matching requirement</li>
+<li>Uses local phase randomization</li>
+<li>Achieves square-root scaling:</li>
+</ul>
+<p>$$
+R \propto \sqrt{\eta}
+$$</p>
+<p>instead of conventional:</p>
+<p>$$
+R \propto \eta
+$$</p>
+<p>where:</p>
+<ul>
+<li>(R) = secret key rate</li>
+<li>(\eta) = channel transmittance</li>
+</ul>
+<hr />
+<h1 id="why-this-paper-matters">Why This Paper Matters</h1>
+<p>Before this work:</p>
+<ul>
+<li>TF-QKD security proofs were complicated</li>
+<li>Existing proofs required global phase post-selection</li>
+<li>Secret key rate reduced significantly</li>
+<li>Experimental implementation became difficult</li>
+</ul>
+<p>This paper simplified both:</p>
+<ul>
+<li>theoretical analysis</li>
+<li>practical implementation assumptions</li>
+</ul>
+<p>Feels like this is one of the papers that pushed TF-QKD from just theory hype into something people could seriously work on experimentally.</p>
+<hr />
+<h1 id="background-motivation">Background Motivation</h1>
+<p>Conventional QKD suffers from exponential loss in optical fibers.</p>
+<p>For standard repeaterless QKD:</p>
+<p>$$
+R \propto \eta
+$$</p>
+<p>Meaning key rate decreases linearly with channel transmittance.</p>
+<p>TF-QKD changes this scaling using:</p>
+<ul>
+<li>single-photon interference</li>
+<li>middle measurement station</li>
+<li>twin-field interference</li>
+</ul>
+<p>Result:</p>
+<p>$$
+R \propto \sqrt{\eta}
+$$</p>
+<p>This is the major breakthrough.</p>
+<p>The paper also connects TF-QKD ideas with:</p>
+<ul>
+<li>quantum repeaters</li>
+<li>entanglement generation protocols</li>
+<li>single-photon interference schemes</li>
+</ul>
+<p>That conceptual connection is important.</p>
+<hr />
+<h1 id="main-idea-of-tf-qkd">Main Idea of TF-QKD</h1>
+<p>Alice and Bob send weak optical states to a middle node Charlie.</p>
+<p>Charlie performs interference measurement.</p>
+<p>Security comes from:</p>
+<ul>
+<li>interference statistics</li>
+<li>decoy-state estimation</li>
+<li>phase-error estimation</li>
+</ul>
+<p>Unlike standard MDI-QKD:</p>
+<ul>
+<li>only one effective photon arrival is needed</li>
+<li>not two-photon coincidence detection</li>
+</ul>
+<p>This is why scaling improves.</p>
+<hr />
+<h1 id="protocol-1-entanglement-based-version">Protocol 1 — Entanglement Based Version</h1>
+<p>The paper first introduces an ideal entanglement-based protocol.</p>
+<h2 id="state-preparation">State Preparation</h2>
+<p>Alice prepares:</p>
+<p>$$
+|\phi_q\rangle_{Aa}
+===================</p>
+<p>\sqrt{q}|0\rangle_A|0\rangle_a
++
+\sqrt{1-q}|1\rangle_A|1\rangle_a
+$$</p>
+<p>Bob prepares similar state.</p>
+<p>Where:</p>
+<ul>
+<li>(|0\rangle) = vacuum state</li>
+<li>(|1\rangle) = single-photon state</li>
+</ul>
+<hr />
+<h1 id="protocol-flow">Protocol Flow</h1>
+<h2 id="step-1">Step 1</h2>
+<p>Alice and Bob prepare entangled optical states.</p>
+<h2 id="step-2">Step 2</h2>
+<p>Signals are sent to central node Charlie.</p>
+<h2 id="step-3">Step 3</h2>
+<p>Charlie applies:</p>
+<ul>
+<li>50:50 beamsplitter</li>
+<li>threshold detectors</li>
+</ul>
+<h2 id="step-4">Step 4</h2>
+<p>Charlie announces detector click events.</p>
+<h2 id="step-5">Step 5</h2>
+<p>Alice and Bob measure in:</p>
+<ul>
+<li>X basis</li>
+<li>Z basis</li>
+</ul>
+<h2 id="step-6">Step 6</h2>
+<p>Raw key extracted from detector outcomes.</p>
+<hr />
+<h1 id="important-observation">Important Observation</h1>
+<p>No global phase randomization is required.</p>
+<p>This is one of the biggest simplifications compared to earlier TF-QKD approaches.</p>
+<p>Global phase matching was experimentally painful.</p>
+<p>Removing it improves practicality significantly.</p>
+<hr />
+<h1 id="detection-probabilities">Detection Probabilities</h1>
+<p>The paper derives probabilities:</p>
+<p>$$
+r = r_1 + r_2
+$$</p>
+<p>where:</p>
+<ul>
+<li>(r_1) = single-photon contribution</li>
+<li>(r_2) = two-photon contribution</li>
+</ul>
+<p>Single-photon interference is the key resource responsible for improved scaling.</p>
+<hr />
+<h1 id="error-rates">Error Rates</h1>
+<p>Two important error rates:</p>
+<h2 id="bit-error-rate">Bit Error Rate</h2>
+<p>$$
+e_X
+$$</p>
+<h2 id="phase-error-rate">Phase Error Rate</h2>
+<p>$$
+e_Z
+$$</p>
+<p>The paper derives:</p>
+<p>$$
+2e_X = e_Z
+$$</p>
+<p>This relation becomes central to the security proof.</p>
+<hr />
+<h1 id="key-rate-formula">Key Rate Formula</h1>
+<p>The asymptotic secret key rate:</p>
+<p>$$
+R_X
+===</p>
+<p>2r$$1-h(e_X)-h(e_Z)$$
+$$</p>
+<p>where:</p>
+<ul>
+<li>(h(x)) = binary entropy function</li>
+<li>(r) = success probability</li>
+</ul>
+<p>Important because:</p>
+<ul>
+<li>both bit errors and phase errors reduce key rate</li>
+<li>phase-error estimation is the difficult part</li>
+</ul>
+<hr />
+<h1 id="protocol-2-prepare-and-measure-version">Protocol 2 — Prepare and Measure Version</h1>
+<p>The paper converts the entanglement-based protocol into a practical prepare-and-measure version.</p>
+<p>This is important because practical systems do not generate ideal entangled states.</p>
+<p>Prepared states:</p>
+<h2 id="x-basis-states">X Basis States</h2>
+<p>$$
+|X_0\rangle = [\sqrt{q}|0\rangle + \sqrt{1-q}|1\rangle]
+$$</p>
+<p>$$
+|X_1\rangle = [ \sqrt{q}|0\rangle + \sqrt{1-q}|1\rangle]
+$$</p>
+<h2 id="z-basis-states">Z Basis States</h2>
+<p>$$
+|Z_0\rangle = |0\rangle
+$$</p>
+<p>$$
+|Z_1\rangle = |1\rangle
+$$</p>
+<hr />
+<h1 id="practical-interpretation">Practical Interpretation</h1>
+<p>This conversion is useful because:</p>
+<ul>
+<li>easier implementation</li>
+<li>closer to real optical systems</li>
+<li>compatible with coherent pulse generation</li>
+</ul>
+<hr />
+<h1 id="protocol-3-practical-tf-qkd">Protocol 3 — Practical TF-QKD</h1>
+<p>This is the practically relevant protocol.</p>
+<p>Uses:</p>
+<ul>
+<li>coherent states</li>
+<li>decoy states</li>
+<li>phase-randomized pulses</li>
+<li>weak coherent pulses</li>
+</ul>
+<hr />
+<h1 id="signal-states">Signal States</h1>
+<p>Key generation states:</p>
+<p>$$
+|\alpha\rangle
+$$</p>
+<p>and</p>
+<p>$$
+|-\alpha\rangle
+$$</p>
+<p>These are coherent states.</p>
+<hr />
+<h1 id="decoy-states">Decoy States</h1>
+<p>Decoy states are:</p>
+<ul>
+<li>phase randomized coherent states</li>
+<li>used for photon-number estimation</li>
+<li>used for phase-error estimation</li>
+</ul>
+<p>This enables decoy-state analysis.</p>
+<hr />
+<h1 id="decoy-state-method">Decoy-State Method</h1>
+<p>The paper uses the idea that phase-randomized coherent states can be represented as mixtures of number states:</p>
+<p>$$
+P_\lambda(n)=\frac{e^{-\lambda}\lambda^n}{n!}
+$$</p>
+<p>This allows Alice and Bob to estimate:</p>
+<p>$$
+p_{ZZ}(k_c,k_d|n_A,n_B)
+$$</p>
+<p>Meaning:</p>
+<p>probability of detector outcomes conditioned on photon numbers.</p>
+<p>This is essential for security.</p>
+<hr />
+<h1 id="cat-states-in-security-proof">Cat States in Security Proof</h1>
+<p>The paper introduces cat states:</p>
+<p>$$
+|C_0\rangle
+$$</p>
+<p>and</p>
+<p>$$
+|C_1\rangle
+$$</p>
+<p>These states are used for:</p>
+<ul>
+<li>phase-error estimation</li>
+<li>bounding Eve's information</li>
+</ul>
+<p>This part is actually pretty nice mathematically.</p>
+<hr />
+<h1 id="most-important-security-equation">Most Important Security Equation</h1>
+<p>Upper bound on phase error:</p>
+<p>$$
+e_Z \le e_Z^{upp}
+$$</p>
+<p>This equation is one of the core results of the paper.</p>
+<p>Once phase error is bounded:</p>
+<ul>
+<li>secret key rate becomes computable</li>
+<li>security follows using entropy arguments</li>
+</ul>
+<hr />
+<h1 id="plob-bound-discussion">PLOB Bound Discussion</h1>
+<p>The paper discusses beating repeaterless capacity limits.</p>
+<p>PLOB bound states fundamental repeaterless rate-loss limit.</p>
+<p>Simulation results in the paper show:</p>
+<ul>
+<li>TF-QKD surpassing PLOB bound</li>
+<li>even with realistic detector imperfections</li>
+</ul>
+<p>This is probably one of the main reasons TF-QKD exploded as a research area.</p>
+<hr />
+<h1 id="important-experimental-assumptions">Important Experimental Assumptions</h1>
+<p>The paper assumes:</p>
+<ul>
+<li>synchronized phase references</li>
+<li>stable interference visibility</li>
+<li>coherent state generation</li>
+<li>decoy-state estimation</li>
+</ul>
+<p>These assumptions look simple theoretically.</p>
+<p>Practically they are difficult.</p>
+<hr />
+<h1 id="practical-challenges">Practical Challenges</h1>
+<h2 id="1-phase-stabilization">1. Phase Stabilization</h2>
+<p>Very difficult experimentally.</p>
+<p>Especially over long fiber distances.</p>
+<p>Problems:</p>
+<ul>
+<li>thermal drift</li>
+<li>laser linewidth mismatch</li>
+<li>fiber vibration</li>
+<li>environmental noise</li>
+</ul>
+<hr />
+<h2 id="2-dark-counts">2. Dark Counts</h2>
+<p>At long distances:</p>
+<ul>
+<li>signal becomes weak</li>
+<li>detector dark counts dominate</li>
+</ul>
+<p>This can increase QBER rapidly.</p>
+<hr />
+<h2 id="3-mode-matching">3. Mode Matching</h2>
+<p>Single-photon interference requires:</p>
+<ul>
+<li>temporal matching</li>
+<li>spectral matching</li>
+<li>polarization matching</li>
+</ul>
+<p>Even small mismatch reduces visibility.</p>
+<hr />
+<h1 id="strengths-of-the-paper">Strengths of the Paper</h1>
+<h2 id="1-simpler-security-proof">1. Simpler Security Proof</h2>
+<p>Compared to earlier TF-QKD security analyses:</p>
+<ul>
+<li>much cleaner</li>
+<li>more elegant</li>
+<li>easier to interpret physically</li>
+</ul>
+<hr />
+<h2 id="2-removal-of-global-phase-matching">2. Removal of Global Phase Matching</h2>
+<p>Big practical improvement.</p>
+<p>Probably one of the strongest parts of the paper.</p>
+<hr />
+<h2 id="3-strong-conceptual-foundation">3. Strong Conceptual Foundation</h2>
+<p>Paper clearly connects TF-QKD with:</p>
+<ul>
+<li>entanglement generation</li>
+<li>quantum repeaters</li>
+<li>single-photon interference physics</li>
+</ul>
+<p>This gives strong physical intuition.</p>
+<hr />
+<h2 id="4-better-key-rate-performance">4. Better Key Rate Performance</h2>
+<p>Paper claims significant improvement over earlier TF-QKD proofs.</p>
+<p>Likely correct under asymptotic assumptions.</p>
+<hr />
+<h1 id="weaknesses-and-limitations">Weaknesses and Limitations</h1>
+<h2 id="1-asymptotic-analysis">1. Asymptotic Analysis</h2>
+<p>Major limitation.</p>
+<p>Paper assumes:</p>
+<ul>
+<li>infinite signals</li>
+<li>infinite decoy states</li>
+<li>perfect statistics</li>
+</ul>
+<p>Real systems cannot achieve this.</p>
+<p>Finite-key analysis is missing.</p>
+<hr />
+<h2 id="2-practical-complexity-still-high">2. Practical Complexity Still High</h2>
+<p>Although simplified theoretically:</p>
+<p>experimental TF-QKD is still hard.</p>
+<p>Especially:</p>
+<ul>
+<li>phase stabilization</li>
+<li>long-distance interference</li>
+<li>synchronization</li>
+</ul>
+<hr />
+<h2 id="3-security-still-relies-on-ideal-models">3. Security Still Relies on Ideal Models</h2>
+<p>Security proof still assumes:</p>
+<ul>
+<li>idealized detectors</li>
+<li>ideal state preparation</li>
+<li>simplified noise models</li>
+</ul>
+<p>Real systems contain more imperfections.</p>
+<hr />
+<h2 id="4-dark-count-sensitivity">4. Dark Count Sensitivity</h2>
+<p>Long-distance operation remains vulnerable to:</p>
+<ul>
+<li>detector noise</li>
+<li>finite visibility</li>
+<li>weak signal levels</li>
+</ul>
+<hr />
+<h1 id="important-equations-summary">Important Equations Summary</h1>
+<h2 id="scaling">Scaling</h2>
+<p>$$
+R \propto \sqrt{\eta}
+$$</p>
+<hr />
+<h2 id="conventional-qkd-scaling">Conventional QKD Scaling</h2>
+<p>$$
+R \propto \eta
+$$</p>
+<hr />
+<h2 id="key-rate-equation">Key Rate Equation</h2>
+<p>$$
+R_X = 2r \left[1 - h(e_X) - h(e_Z)\right]
+$$</p>
+<hr />
+<h2 id="phase-error-bound">Phase Error Bound</h2>
+<p>$$
+e_Z \le e_Z^{upp}
+$$</p>
+<hr />
+<h1 id="research-importance">Research Importance</h1>
+<p>This paper strongly influenced later TF-QKD protocols including:</p>
+<ul>
+<li>PM-QKD</li>
+<li>SNS-TF-QKD</li>
+<li>no-phase-postselection TF-QKD</li>
+<li>practical decoy-state TF systems</li>
+</ul>
+<p>Many later papers are extensions or refinements of this framework.</p>
+<hr />
+<h1 id="possible-research-extensions">Possible Research Extensions</h1>
+<h2 id="finite-key-tf-qkd">Finite-Key TF-QKD</h2>
+<p>Still major open problem.</p>
+<hr />
+<h2 id="satellite-tf-qkd">Satellite TF-QKD</h2>
+<p>Very difficult because of:</p>
+<ul>
+<li>turbulence</li>
+<li>Doppler shift</li>
+<li>free-space phase instability</li>
+</ul>
+<p>But potentially revolutionary.</p>
+<hr />
+<h2 id="integrated-photonic-tf-qkd">Integrated Photonic TF-QKD</h2>
+<p>Important for commercialization.</p>
+<hr />
+<h2 id="machine-learning-assisted-stabilization">Machine Learning Assisted Stabilization</h2>
+<p>Could help with:</p>
+<ul>
+<li>adaptive phase correction</li>
+<li>drift prediction</li>
+<li>real-time optimization</li>
+</ul>
+<p>Interesting future direction.</p>
+<hr />
+<h1 id="overall-thoughts">Overall Thoughts</h1>
+<p>This paper honestly feels like one of the core TF-QKD papers.</p>
+<p>A lot of later papers are basically extending ideas from here.</p>
+<p>Not perfect obviously, but definitely important.</p>
+<p>Things I found important:</p>
+<ul>
+<li>simpler security proof</li>
+<li>more practical than earlier TF-QKD versions</li>
+<li>gives physical intuition properly</li>
+<li>validates square-root scaling</li>
+</ul>
+<p>Main problems:</p>
+<ul>
+<li>asymptotic assumptions are unrealistic</li>
+<li>experimental implementation still hard</li>
+<li>phase stabilization is still painful</li>
+</ul>
+<p>But those are mostly field-wide TF-QKD problems rather than failures unique to this paper.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
