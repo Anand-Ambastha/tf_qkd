@@ -102,8 +102,102 @@ conditions.
 The simulator has progressed through multiple implementation phases.
 
 ---
+# Version History
 
-# Completed Phases
+## v0.1.0 — TF-QKD Security Protocol Foundation
+**Status:** Completed
+
+### Features
+- Implemented Curty–Azuma–Lo Protocol 3 security proof.
+- X-basis gain and QBER calculations (Eqs. 27–31).
+- Z-basis gain calculations (Eqs. 32–35).
+- Photon-number yield evaluation.
+- Cat-state coefficient generation.
+- Phase-error upper bound estimation.
+- Asymptotic secret key rate (SKR) computation.
+- Signal intensity (α) optimization.
+- PLOB bound comparison.
+
+### Output
+- SKR vs channel loss.
+- Optimized α vs channel loss.
+- Security proof validation.
+
+---
+
+## v1.0.0 — Deterministic Free-Space Optical Channel
+**Status:** Completed
+
+### Features
+- Atmospheric attenuation model (Beer–Lambert law).
+- Gaussian beam propagation.
+- Receiver aperture coupling efficiency.
+- Geometric diffraction losses.
+- End-to-end deterministic FSO transmittance model.
+
+### Output
+- Atmospheric transmittance vs distance.
+- Geometric efficiency vs distance.
+- Deterministic TF-QKD SKR vs FSO link distance.
+- PLOB comparison under deterministic FSO loss.
+
+---
+
+## v1.1.0 — Log-Normal Turbulence Integration
+**Status:** Completed
+
+### Features
+- Rytov variance computation.
+- Log-normal turbulence model.
+- Energy-neutral fading implementation.
+- Monte Carlo channel realization generation.
+- Ergodic TF-QKD secret key rate estimation.
+- Weak, moderate, and strong turbulence studies.
+- Turbulence statistics validation.
+- σR² validity analysis for weak-fluctuation regime.
+
+### Output
+- Irradiance probability distributions.
+- Turbulence-induced channel statistics.
+- Ergodic SKR under atmospheric turbulence.
+- Deterministic vs turbulent channel comparison.
+
+---
+
+## v1.1.1 — Analytical Log-Normal Averaging Framework
+**Status:** In Progress
+
+### Features
+- Derivation of log-normal fading probability density function.
+- Numerical quadrature evaluation of ensemble averages.
+- Average X-basis gain:
+  
+  <pXX>
+
+- Average X-basis QBER:
+
+  <eX>
+
+- Average TF-QKD secret key rate:
+
+  <R>
+
+- Quadrature-based ergodic SKR computation.
+- Monte Carlo validation framework.
+- Relative error analysis between Monte Carlo and quadrature methods.
+- Optimization of signal intensity α under log-normal fading.
+
+### Planned Output
+- Monte Carlo vs quadrature SKR comparison.
+- Relative error vs distance.
+- Optimal α vs distance.
+- Optimized average SKR vs fixed α.
+- Computational complexity and runtime comparison.
+
+### Motivation
+Replace expensive Monte Carlo-only averaging with a mathematically rigorous and computationally efficient ensemble-averaging framework while preserving Monte Carlo validation capability.
+---
+# Reproduction Phases (v0.1.0)
 
 ## Phase 1 — Foundation and Channel Modeling
 
@@ -233,7 +327,7 @@ Fast-analysis modes are therefore included for exploratory studies.
 
 # Validation Status
 
-The framework currently includes automated validation checks for:
+The framework notebooks currently includes automated validation checks for:
 
 * Poisson normalization,
 * LP feasibility,
@@ -251,14 +345,11 @@ implemented asymptotic and finite-decoy analyses.
 
 # Ongoing Work
 
-Current development directions include:
-
-* reproduction of paper-level finite-decoy plots,
-* tighter LP formulations,
-* decoy-state optimization,
-* improved numerical stability,
-* performance optimization.
-
+- Monte Carlo vs quadrature SKR comparison.
+- Relative error vs distance.
+- Optimal α vs distance.
+- Optimized average SKR vs fixed α.
+- Computational complexity and runtime comparison.
 ---
 
 # Planned Extensions
@@ -271,12 +362,12 @@ Current exploratory work includes early-stage implementation of:
 * turbulence-aware channel studies,
 * stochastic optical fading,
 * pointing-error analysis,
-* atmospheric-loss modeling.
+* atmospheric-loss modeling,
+* log-normal turbulence,
 
 Planned future extensions include:
 
 * Gamma-Gamma turbulence,
-* log-normal turbulence,
 * scintillation studies,
 * adaptive optics,
 * aperture averaging,
@@ -318,6 +409,8 @@ notebooks/
 ├── Phase3_KeyRate_Optimization_and_Robustness.ipynb
 ├── Phase4_Finite_Decoy_LP.ipynb
 ├── Phase5_FSO_Channel_Modeling.ipynb
+├── tfqkd.py
+├── plots.py
 ```
 
 ---

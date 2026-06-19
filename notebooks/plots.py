@@ -18,7 +18,7 @@ import tfqkd_fso_turbulence_optimized as M
 plt.rcParams.update({'figure.dpi': 130, 'axes.grid': True, 'grid.alpha': 0.3,
                       'font.size': 10, 'lines.linewidth': 1.8})
 
-OUT = './figures'
+OUT = './'
 thetaA, thetaB = M.PARAMS['thetaA'], M.PARAMS['thetaB']
 theta = thetaA - thetaB
 pd = M.PARAMS['pd']

@@ -25,6 +25,7 @@ from functools import lru_cache
 import numpy as np
 from scipy.special import i0 as bessel_i0, gammaln
 from scipy.optimize import minimize_scalar
+from scipy.integrate import quad
 
 # =============================================================================
 # 1. Global parameters
@@ -557,6 +558,283 @@ def tfqkd_skr_turbulence(distance_km, pd, thetaA, thetaB, Cn2, fso_params,
 
 
 # =============================================================================
+# 10b. Analytical (quadrature-based) ensemble averaging under log-normal
+#      fading -- preserves all Monte Carlo functions above unchanged.
+#
+#      Derivation summary (full derivation in accompanying writeup):
+#
+#      eta_turb = eta_nom * exp(X),  X ~ N(mu_X, sigma_X^2)
+#
+#      For the *unclipped* log-normal (the clip to [0,1] applied in
+#      sample_lognormal_eta affects a negligible probability mass in the
+#      sigma_R^2 < 1 validity regime; see _lognormal_clip_mass_above_one()
+#      below for a diagnostic of this approximation), the standard
+#      change-of-variables identity for a log-normal random variable gives,
+#      for any observable g(eta):
+#
+#          <g>(eta_nom) = Integral_{-inf}^{inf} g(eta_nom * exp(X))
+#                              * phi(X; mu_X, sigma_X^2) dX
+#
+#      where phi is the Gaussian PDF. This substitution is EXACT (not an
+#      approximation) and removes the 1/eta singularity that the eta-space
+#      log-normal density has at eta -> 0, which is why we integrate in
+#      X-space rather than eta-space.
+#
+#      None of g = p_XX, g = e_X, g = R admit closed-form Gaussian integrals
+#      (each involves exp(+/- gamma) with gamma ~ sqrt(eta) = sqrt(eta_nom)
+#      exp(X/2), i.e. an exponential-of-exponential of the integration
+#      variable -- and R additionally passes through the binary entropy
+#      function and the Eq.(20-22) phase-error sum, which is transcendental
+#      in eta). Per requirement 3, we do NOT attempt invalid symbolic
+#      simplification; we evaluate the exact integral by quadrature
+#      (scipy.integrate.quad) instead.
+#
+#      QBER requires special care: e_X(eta) = N(eta)/D(eta) is a RATIO, so
+#      <e_X> != <N>/<D> in general (Jensen's inequality forbids exchanging
+#      ratio and average). The physically meaningful average -- consistent
+#      with "total expected wrong bits / total expected sifted bits" -- is
+#      the gain-weighted average:
+#
+#          <e_X> = <p_XX * e_X> / <p_XX>
+#
+#      which is what average_qber_lognormal() computes.
+# =============================================================================
+
+QUAD_N_SIGMA = 8.0        # Gaussian truncation half-width (tail < 1e-15)
+QUAD_EPSABS = 1e-12
+QUAD_EPSREL = 1e-10
+QUAD_LIMIT = 200
+
+
+def _gaussian_pdf(X, mu_X, sigma_X):
+    """phi(X; mu_X, sigma_X^2)."""
+    return np.exp(-0.5 * ((X - mu_X) / sigma_X) ** 2) / (sigma_X * np.sqrt(2.0 * np.pi))
+
+
+def _quad_bounds(mu_X, sigma_X, n_sigma=QUAD_N_SIGMA):
+    """Truncated integration domain: [mu_X - n_sigma*sigma_X, mu_X + n_sigma*sigma_X].
+    Tail mass beyond 8 sigma is ~1e-15, below double-precision noise floor,
+    so this truncation introduces no numerically meaningful error while
+    making quad's job well-posed (avoids relying on its +/-inf transform
+    when sigma_X is tiny and the integrand is a sharp spike)."""
+    return mu_X - n_sigma * sigma_X, mu_X + n_sigma * sigma_X
+
+
+def _lognormal_clip_mass_above_one(eta_nominal, sigma_R2):
+    """Diagnostic: P(eta_turb > 1) under the UNCLIPPED log-normal, i.e. the
+    probability mass that sample_lognormal_eta() clips to exactly 1. This
+    quantifies the approximation made by integrating the unclipped log-normal
+    in average_*_lognormal() instead of the clipped one used by the MC
+    sampler. Returns a probability in [0,1]; expected to be ~0 in the
+    sigma_R^2 < 1 validity regime unless eta_nominal is itself close to 1."""
+    from scipy.stats import norm
+    mu_X, sigma_X2 = lognormal_params(sigma_R2)
+    sigma_X = np.sqrt(sigma_X2)
+    # P(eta_nom * exp(X) > 1) = P(X > -ln(eta_nom)) = P(X > ln(1/eta_nom))
+    z = (np.log(1.0 / np.clip(eta_nominal, 1e-300, None)) - mu_X) / sigma_X
+    return float(norm.sf(z))
+
+
+def average_pxx_lognormal(eta_nominal, sigma_R2, phi, theta, alpha, pd,
+                           n_sigma=QUAD_N_SIGMA):
+    """<p_XX>(eta_nom) = Integral p_XX(eta_nom*exp(X)) * phi(X) dX  (Eq. 30
+    pushed through the log-normal fading channel). Scalar eta_nominal/sigma_R2
+    in, scalar out; see average_pxx_lognormal_array for the vectorized wrapper.
+    """
+    mu_X, sigma_X2 = (float(v) for v in lognormal_params(sigma_R2))
+    sigma_X = math.sqrt(sigma_X2) if sigma_X2 > 0 else 1e-12
+    lo, hi = _quad_bounds(mu_X, sigma_X, n_sigma)
+
+    def integrand(X):
+        eta = eta_nominal * math.exp(X)
+        gamma = math.sqrt(eta) * alpha ** 2
+        pxx = float(p_xx_total(phi, theta, gamma, pd))
+        return pxx * _gaussian_pdf(X, mu_X, sigma_X)
+
+    val, err = quad(integrand, lo, hi, epsabs=QUAD_EPSABS, epsrel=QUAD_EPSREL,
+                     limit=QUAD_LIMIT)
+    return max(val, 0.0), err
+
+
+def average_qber_lognormal(eta_nominal, sigma_R2, phi, theta, alpha, pd,
+                            n_sigma=QUAD_N_SIGMA):
+    """<e_X>(eta_nom) = <p_XX * e_X> / <p_XX>  (gain-weighted average QBER;
+    see derivation note above on why the naive unweighted average is wrong).
+    Returns (mean_eX, (num_err, den_err))."""
+    mu_X, sigma_X2 = (float(v) for v in lognormal_params(sigma_R2))
+    sigma_X = math.sqrt(sigma_X2) if sigma_X2 > 0 else 1e-12
+    lo, hi = _quad_bounds(mu_X, sigma_X, n_sigma)
+
+    def integrand_num(X):
+        eta = eta_nominal * math.exp(X)
+        gamma = math.sqrt(eta) * alpha ** 2
+        pxx = float(p_xx_total(phi, theta, gamma, pd))
+        ex = float(np.clip(bit_error_rate(phi, theta, gamma, pd), 0.0, 0.5))
+        return pxx * ex * _gaussian_pdf(X, mu_X, sigma_X)
+
+    def integrand_den(X):
+        eta = eta_nominal * math.exp(X)
+        gamma = math.sqrt(eta) * alpha ** 2
+        pxx = float(p_xx_total(phi, theta, gamma, pd))
+        return pxx * _gaussian_pdf(X, mu_X, sigma_X)
+
+    num, num_err = quad(integrand_num, lo, hi, epsabs=QUAD_EPSABS,
+                         epsrel=QUAD_EPSREL, limit=QUAD_LIMIT)
+    den, den_err = quad(integrand_den, lo, hi, epsabs=QUAD_EPSABS,
+                         epsrel=QUAD_EPSREL, limit=QUAD_LIMIT)
+    mean_eX = num / den if den > 1e-300 else 0.5
+    return float(np.clip(mean_eX, 0.0, 0.5)), (num_err, den_err)
+
+
+def average_skr_lognormal(eta_nominal, sigma_R2, alpha, pd, thetaA, thetaB,
+                           Nmax=NMAX_DEFAULT, phi=0.0, n_sigma=QUAD_N_SIGMA):
+    """<R>(eta_nom) = Integral R(eta_nom*exp(X), alpha) * phi(X) dX.
+
+    This is the direct analytical analogue of tfqkd_skr_turbulence's Monte
+    Carlo mean(R(eta_samples)) -- same full key_rate() pipeline (Eqs. 17-22,
+    27-35), but the expectation over fading is taken by 1-D Gauss-Kronrod
+    quadrature (scipy.integrate.quad) instead of sample averaging. No
+    closed form exists because R involves h(.) and the Eq.(20-22) phase
+    error sum, both transcendental in eta -- see module-level derivation note.
+    """
+    theta = thetaA - thetaB
+    mu_X, sigma_X2 = (float(v) for v in lognormal_params(sigma_R2))
+    sigma_X = math.sqrt(sigma_X2) if sigma_X2 > 0 else 1e-12
+    lo, hi = _quad_bounds(mu_X, sigma_X, n_sigma)
+
+    def integrand(X):
+        eta = eta_nominal * math.exp(X)
+        eta = min(max(eta, 0.0), 1.0)  # match MC sampler's clip for consistency
+        R = key_rate(alpha, eta, pd, thetaA, thetaB, Nmax, phi)
+        return R * _gaussian_pdf(X, mu_X, sigma_X)
+
+    val, err = quad(integrand, lo, hi, epsabs=QUAD_EPSABS, epsrel=QUAD_EPSREL,
+                     limit=QUAD_LIMIT)
+    return max(val, 0.0), err
+
+
+def average_skr_lognormal_array(distance_km, pd, thetaA, thetaB, Cn2,
+                                 fso_params, Nmax=NMAX_DEFAULT,
+                                 alpha_fixed=0.20, n_sigma=QUAD_N_SIGMA):
+    """Vectorized-over-distance wrapper around average_skr_lognormal(), mirroring
+    tfqkd_skr_turbulence()'s signature/return so the two can be swapped for
+    direct comparison. quad() itself is inherently scalar per evaluation
+    point, so this loops over distance (same structural shape as the MC
+    function's loop over distance, but with O(1) quadrature evaluations per
+    point instead of O(N_samples) sample draws)."""
+    distance_km = np.asarray(distance_km, dtype=np.float64)
+    fso = deterministic_fso_channel(fso_params['alpha_atm'], distance_km,
+                                     fso_params['wavelength'], fso_params['w0'],
+                                     fso_params['receiver_radius'])
+    eta_nominal_arr = fso['eta_fso']
+    R_arr = np.zeros(len(distance_km))
+    err_arr = np.zeros(len(distance_km))
+
+    for i, (L_km, eta_nom) in enumerate(zip(distance_km, eta_nominal_arr)):
+        if eta_nom < 1e-50:
+            continue
+        sigma_R2 = float(rytov_variance(Cn2, fso_params['wavelength'], L_km * 1e3))
+        R_arr[i], err_arr[i] = average_skr_lognormal(
+            float(eta_nom), sigma_R2, alpha_fixed, pd, thetaA, thetaB, Nmax,
+            n_sigma=n_sigma)
+    return R_arr, eta_nominal_arr, err_arr
+
+
+def optimize_alpha_lognormal(eta_nominal, sigma_R2, pd, thetaA, thetaB,
+                              delta=0.0, Nmax=NMAX_DEFAULT,
+                              alpha_min=ALPHA_BOUNDS[0], alpha_max=ALPHA_BOUNDS[1],
+                              n_sigma=QUAD_N_SIGMA):
+    """alpha* = argmax_alpha <R(alpha)>, where <R> is the QUADRATURE-averaged
+    SKR under log-normal fading (average_skr_lognormal), at a single distance
+    point (fixed eta_nominal, sigma_R2). Direct analogue of optimize_alpha()
+    (Eqs. 17-19) but optimizing the ensemble-averaged rate rather than the
+    deterministic rate -- this is requirement 10."""
+    phi = delta * np.pi
+
+    def neg_avg_rate(a):
+        if a <= 0:
+            return 0.0
+        val, _ = average_skr_lognormal(eta_nominal, sigma_R2, a, pd, thetaA,
+                                        thetaB, Nmax, phi, n_sigma)
+        return -val
+
+    probes = np.logspace(np.log10(alpha_min), np.log10(alpha_max), 5)
+    probe_rates = np.array([-neg_avg_rate(a) for a in probes])
+    if np.all(probe_rates <= 0.0):
+        return alpha_min, 0.0
+
+    result = minimize_scalar(neg_avg_rate, bounds=(alpha_min, alpha_max),
+                              method='bounded',
+                              options={'maxiter': OPT_MAXITER, 'xatol': 1e-4})
+    alpha_opt = float(np.clip(result.x, alpha_min, alpha_max))
+    return alpha_opt, max(-float(result.fun), 0.0)
+
+
+def optimize_alpha_lognormal_vs_distance(distance_km, pd, thetaA, thetaB, Cn2,
+                                          fso_params, Nmax=NMAX_DEFAULT,
+                                          alpha_fixed=0.20, n_sigma=QUAD_N_SIGMA):
+    """Sweep optimize_alpha_lognormal() over distance: returns alpha*(L),
+    <R(alpha*)>(L), and <R(alpha_fixed)>(L) for the 'optimized vs fixed'
+    comparison plot (requirement 11)."""
+    distance_km = np.asarray(distance_km, dtype=np.float64)
+    fso = deterministic_fso_channel(fso_params['alpha_atm'], distance_km,
+                                     fso_params['wavelength'], fso_params['w0'],
+                                     fso_params['receiver_radius'])
+    eta_nominal_arr = fso['eta_fso']
+    n = len(distance_km)
+    alpha_star = np.full(n, alpha_fixed)
+    R_star = np.zeros(n)
+    R_fixed = np.zeros(n)
+
+    for i, (L_km, eta_nom) in enumerate(zip(distance_km, eta_nominal_arr)):
+        if eta_nom < 1e-50:
+            continue
+        sigma_R2 = float(rytov_variance(Cn2, fso_params['wavelength'], L_km * 1e3))
+        a_opt, R_opt = optimize_alpha_lognormal(
+            float(eta_nom), sigma_R2, pd, thetaA, thetaB, Nmax=Nmax,
+            n_sigma=n_sigma)
+        R_fix, _ = average_skr_lognormal(
+            float(eta_nom), sigma_R2, alpha_fixed, pd, thetaA, thetaB, Nmax,
+            n_sigma=n_sigma)
+        alpha_star[i], R_star[i] = a_opt, max(R_opt, 0.0)
+        R_fixed[i] = max(R_fix, 0.0)
+
+    return alpha_star, R_star, R_fixed, eta_nominal_arr
+
+
+def validate_mc_vs_quadrature(distance_km, pd, thetaA, thetaB, Cn2, fso_params,
+                               N_samples=None, Nmax=NMAX_DEFAULT,
+                               alpha_fixed=0.20, rng=None, n_sigma=QUAD_N_SIGMA):
+    """Requirement 7-8: compare Monte Carlo (tfqkd_skr_turbulence, UNCHANGED)
+    against quadrature (average_skr_lognormal_array, new) over distance, and
+    compute the relative error abs(MC - Quad)/Quad point-by-point. Returns a
+    dict with both SKR curves, sigma_R^2(L), and the relative-error array.
+
+    This routine calls -- but never modifies -- the existing MC function,
+    satisfying requirement 13 (MC remains available as the validation
+    benchmark, not replaced)."""
+    distance_km = np.asarray(distance_km, dtype=np.float64)
+
+    R_mc, eta_nom_mc = tfqkd_skr_turbulence(
+        distance_km, pd, thetaA, thetaB, Cn2, fso_params,
+        N_samples=N_samples, Nmax=Nmax, alpha_fixed=alpha_fixed, rng=rng)
+
+    R_quad, eta_nom_quad, quad_err = average_skr_lognormal_array(
+        distance_km, pd, thetaA, thetaB, Cn2, fso_params, Nmax=Nmax,
+        alpha_fixed=alpha_fixed, n_sigma=n_sigma)
+
+    sigma_R2_arr = rytov_variance(Cn2, fso_params['wavelength'], distance_km * 1e3)
+
+    quad_safe = np.where(R_quad > 1e-300, R_quad, np.nan)
+    rel_error = np.abs(R_mc - R_quad) / quad_safe
+
+    return {'distance_km': distance_km, 'R_mc': R_mc, 'R_quad': R_quad,
+            'quad_err': quad_err, 'eta_nominal': eta_nom_mc,
+            'sigma_R2': sigma_R2_arr, 'rel_error': rel_error,
+            'sigma_R2_lt_1': sigma_R2_arr < 1.0}
+
+
+# =============================================================================
 # 11. Minimal correctness self-test (replaces the notebook's inline asserts)
 # =============================================================================
 
@@ -577,6 +855,29 @@ def _self_test():
 
     a_opt, _, R_max = optimize_alpha(float(eta[2]), pd, thetaA, thetaB, Nmax=NMAX_DEFAULT)
     assert R_max >= 0 and ALPHA_BOUNDS[0] <= a_opt <= ALPHA_BOUNDS[1]
+
+    # --- New: quadrature-based ensemble averaging sanity checks ---
+    theta_test = thetaA - thetaB
+    sigma_R2_test = 0.3  # well inside sigma_R^2 < 1 validity regime
+    eta_nom_test = float(eta[3])  # 40 dB point
+
+    pxx_q, _ = average_pxx_lognormal(eta_nom_test, sigma_R2_test, 0.0, theta_test,
+                                      PARAMS['alpha'], pd)
+    assert 0.0 <= pxx_q <= 1.0
+
+    eX_q, _ = average_qber_lognormal(eta_nom_test, sigma_R2_test, 0.0, theta_test,
+                                      PARAMS['alpha'], pd)
+    assert 0.0 <= eX_q <= 0.5
+
+    R_q, _ = average_skr_lognormal(eta_nom_test, sigma_R2_test, PARAMS['alpha'], pd,
+                                    thetaA, thetaB, NMAX_DEFAULT)
+    assert R_q >= 0.0
+
+    # Sigma_R2 -> 0 limit: <R> must reduce to deterministic key_rate(eta_nominal)
+    R_q_zero, _ = average_skr_lognormal(eta_nom_test, 1e-10, PARAMS['alpha'], pd,
+                                         thetaA, thetaB, NMAX_DEFAULT)
+    R_det_zero = key_rate(PARAMS['alpha'], eta_nom_test, pd, thetaA, thetaB, NMAX_DEFAULT)
+    assert abs(R_q_zero - R_det_zero) < 1e-6 * max(R_det_zero, 1e-12) + 1e-8
 
     print('Self-test OK.')
 
